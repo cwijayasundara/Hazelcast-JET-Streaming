@@ -29,8 +29,9 @@ public class ImapToJetExample {
         Pipeline p = Pipeline.create();
 
         p.drawFrom(Sources.remoteMap(MAP_NAME,clientConfig))
-                .filter((e) -> e.getKey().equals("78"))
+                //.filter((e) -> e.getKey().equals("78"))
                 .filter((t) -> ((Employee)t.getValue()).getAge()>30)
+                .filter((c) -> ((Employee)c.getValue()).getSalary() > 500)
                 .drainTo(Sinks.map(JET_MAP));
 
         // Start Jet, populate the input list
@@ -43,7 +44,13 @@ public class ImapToJetExample {
             empMap.put(Integer.toString(count), employee);
         }
 
-            // Perform the computation
+        empMap.put("1001", new Employee("Tom", 50, false, 1000.00));
+        empMap.put("1002", new Employee("Jim", 31, true, 3456.00));
+        empMap.put("1003", new Employee("Kal", 35, false, 23.90));
+        empMap.put("5000", new Employee("Toddy", 45, true, 234.00));
+        empMap.put("6000", new Employee("Timmy", 70, false, 12000.00));
+
+        // Perform the computation
         jet.newJob(p).join();
 
             // Check the results
